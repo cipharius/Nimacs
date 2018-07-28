@@ -1,0 +1,14 @@
+* Nimacs
+  Nim integration for GNU Emacs.
+  
+  Purpose of this project is to allow extending GNU Emacs with Nim as an
+  alternative to elisp.
+  
+  For module to work with GNU Emacs, you must accept GPL compatible license by
+  passing flag =-d:acceptGPL= when compiling emacs module. Otherwise, emacs will
+  refuse to load the module.
+  
+* Prerequisites
+  By default GNU Emacs dynamic module support might be disabled. In order to
+  enable this feature, Emacs has to be compiled from source using
+  =--with-modules= flag when configuring it.
