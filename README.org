@@ -9,6 +9,10 @@
   refuse to load the module.
   
 * Prerequisites
+  This module requires =emacs-module.h= header file, which is found in emacs
+  source. Currently it has to be included manually with switch:
+  =-cincludes:PATH_TO_INCLUDE_DIR=.
+
   By default GNU Emacs dynamic module support might be disabled. In order to
   enable this feature, Emacs has to be compiled from source using
   =--with-modules= flag when configuring it.
