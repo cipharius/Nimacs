@@ -1,12 +1,10 @@
 * Nimacs
-  Nim integration for GNU Emacs.
-  
   Purpose of this project is to allow extending GNU Emacs with Nim as an
-  alternative to elisp.
+  alternative to Elisp.
   
-  For module to work with GNU Emacs, you must accept GPL compatible license by
-  passing flag =-d:acceptGPL= when compiling emacs module. Otherwise, emacs will
-  refuse to load the module.
+  For module to work with GNU Emacs, you must accept the GPL compatible license
+  requirement by passing flag =-d:acceptGPL= when compiling emacs module.
+  Without this, GNU Emacs will refuse to load the module.
   
 * Prerequisites
   This module requires =emacs-module.h= header file, which is found in emacs
