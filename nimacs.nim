@@ -1,4 +1,5 @@
 import macros
+import strutils
 import nimacs.emacsModule
 export nimacs.emacsModule
 
@@ -21,12 +22,47 @@ macro `->`*(obj: untyped, funcall: untyped): untyped =
   funcall.insert(1, obj)
   return funcall
 
-proc call*(emacs: EmacsEnv, fun: EmacsValue, args: varargs[EmacsValue]): EmacsValue =
+proc call*(emacs: EmacsEnv, fun: EmacsValue, args: varargs[EmacsValue]): EmacsValue {.inline,discardable.} =
+  ## Emacs function call wrapper.
+  ##
+  ## Has to be a procedure instead of macro, in order to cast
+  ## varargs to unchecked array.
   emacs->funcall(fun, args.len, args.toCArray)
 
 template call*(fun: EmacsValue, args: varargs[EmacsValue]): EmacsValue =
   mixin emacs
   emacs.call(fun, args)
+
+macro emacsFunctions*(statements: varargs[untyped]): untyped =
+  ## Generate templates for implicit emacs functions
+  ##
+  ## Example:
+  ## .. code-block:: nim
+  ##   emacsFunctions concat, message as msg
+  ##   msg(concat(emLit"Example of ", emLit"Emacs function call"))
+  result = newStmtList()
+
+  for stmt in statements:
+    var fun: NimNode
+    var sym: string
+
+    if stmt.kind == nnkIdent:
+      fun = stmt
+      sym = $stmt
+    elif stmt.kind == nnkInfix and stmt[0] == newIdentNode"as":
+      fun = stmt[2]
+      sym = $stmt[1]
+    else:
+      error "Invalid argument \"$#\"" % stmt.repr
+
+    result.add quote do:
+      template `fun`(args: varargs[EmacsValue]): untyped =
+        call(emSym`sym`, args)
+
+template provide*(feature: string): typed =
+  mixin emacs
+  emacsFunctions provide
+  discard provide(feature.emSym)
 
 macro bindProcedure*(procSym: EmacsFunction, name: string): typed =
   ## Bind procedure as emacs function
@@ -58,12 +94,6 @@ macro bindProcedure*(procSym: EmacsFunction, name: string): typed =
       emacs->makeFunction(`argCount`, `argCount`, cast[ptr EmacsFunction](`procSym`), `docLit`, nil)
     ]
     discard emacs->funcall(emSym("fset"), 2, args.toCArray)
-
-template provide*(feature: string): typed =
-  mixin emacs
-  let provideFunc = emSym("provide")
-  var funcallArgs = [emSym(feature)]
-  discard emacs->funcall(provideFunc, 1, funcallArgs.toCArray)
 
 macro emacsModule*(body: untyped): untyped =
   ## Emacs module entry point
@@ -151,30 +181,6 @@ macro emacsProc*(procedure: untyped): typed =
 
   return procedure
 
-# macro emacsFunctions*(funcs: varargs[string]): untyped =
-#   result = nnkLetSection.newNimNode()
-
-#   for f in funcs:
-#     echo f.repr
-#     result.add(newIdentDefs(
-#       f,
-#       nil,
-#       newPar(
-#         newProc(
-#           params: newIdentDefs(
-#             newIdentNode "args",
-#             [
-#               newIdentNode "EmacsValue",
-#               nnkBracketExpr.newTree(newIdentNode "varargs", newIdentNode "string")
-#             ]
-#           ),
-#           body: newStmtList(
-#             newCall(newIdentNode "call", newIdentNode "args")
-#           ),
-#           procType: nnkLambda
-#         )
-#       )
-#     ))
 
 
 template emSym*(symbolName: cstring): EmacsValue =
