@@ -14,3 +14,15 @@
   By default GNU Emacs dynamic module support might be disabled. In order to
   enable this feature, Emacs has to be compiled from source using
   =--with-modules= flag when configuring it.
+  
+* Status
+  * [X] Emacs function definition wrapper
+  * [X] Emacs function call wrapper
+  * [-] Emacs literals creation and acquiration
+    * [X] Strings
+    * [X] Integers
+    * [ ] Floats
+    * [ ] Vectors
+  * [ ] Retrieve EmacsValue type
+  * [ ] Support for passing custom Nim objects to Emacs(user_ptr)
+  * [ ] Emacs function error handling
