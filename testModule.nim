@@ -1,5 +1,4 @@
 import nimacs
-import macros
 
 proc identTest(ident: EmacsValue): EmacsValue {.emacsProc.} =
   ## This is a emacs symbol fetching test.
