@@ -1,7 +1,7 @@
 import macros
 import strutils
 import nimacs/private/emacsModule
-export nimacs/private/emacsModule
+export emacsModule
 
 # Make sure module complies with GNU Emacs license
 when defined(acceptGPL):
